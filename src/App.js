@@ -3,7 +3,7 @@ import "./App.css";
 
 function App() {
   const nameRef = useRef();
-  const firstnameRef = useRef();
+  const lastnameRef = useRef();
   const emailRef = useRef();
   const ageRef = useRef();
 
@@ -15,7 +15,7 @@ function App() {
   //add user value name
   const [inputValue, setInputValue] = useState({
     name: "",
-    firstname: "",
+    lastname: "",
     email: "",
     age: "",
     gender: "",
@@ -25,10 +25,10 @@ function App() {
     const newInputName = { ...inputValue };
 
     newInputName.name = nameRef.current.value;
-    newInputName.firstname = firstnameRef.current.value;
+    newInputName.lastname = lastnameRef.current.value;
     newInputName.email = emailRef.current.value;
     newInputName.age = ageRef.current.value;
-    
+
     setInputValue(newInputName);
   };
   //checkbox clic
@@ -43,7 +43,7 @@ function App() {
       const user = {
         id: Math.floor(Math.random() * (10 - 1 + 1) + 1),
         name: nameRef.current.value,
-        firstname: firstnameRef.current.value,
+        lastname: lastnameRef.current.value,
         email: emailRef.current.value,
         age: ageRef.current.value,
         gender: inputChecked,
@@ -63,13 +63,12 @@ function App() {
       }
 
       setusers(newUsers);
-
     }
     ///inputvalues objeqt value clear
     const newInputName = { ...inputValue };
 
     newInputName.name = "";
-    newInputName.firstname = "";
+    newInputName.lastname = "";
     newInputName.email = "";
     newInputName.age = "";
 
@@ -77,6 +76,7 @@ function App() {
     setInputChecked("");
     setIsupdate(false);
   };
+  console.log(inputValue);
 
   const deleteUser = (id) => {
     const newUser = [...users];
@@ -86,7 +86,6 @@ function App() {
     });
 
     setusers(filterUser);
-
   };
 
   const updateUser = (id) => {
@@ -101,7 +100,6 @@ function App() {
     });
 
     setInputValue(newInputName);
-
   };
 
   return (
@@ -114,10 +112,10 @@ function App() {
           placeholder="name"
         />
         <input
-          value={inputValue.firstname}
-          ref={firstnameRef}
+          value={inputValue.lastname}
+          ref={lastnameRef}
           onChange={oNinputChange}
-          placeholder="firstname"
+          placeholder="lastname"
         />
         <input
           value={inputValue.email}
@@ -154,7 +152,7 @@ function App() {
           return (
             <ul key={people.id}>
               <li> name: {people.name}</li>
-              <li> firstname: {people.firstname}</li>
+              <li> lastname: {people.lastname}</li>
               <li> email: {people.email}</li>
               <li> age: {people.age}</li>
               <li> gender: {people.gender}</li>
