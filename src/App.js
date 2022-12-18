@@ -41,6 +41,7 @@ function App() {
     if (inputChecked === "") {
       errorUser.gender = "gMarking is mandatoryoga";
     }
+
     setTimeout(() => {
       setOutError(errorUser);
     }, 5000);
@@ -145,7 +146,7 @@ function App() {
   };
   return (
     <div>
-      <form>
+      <form className="form">
         <input
           value={inputValue.name}
           ref={nameRef}

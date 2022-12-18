@@ -7,6 +7,26 @@
 }
 .users {
     display: flex;
-    width: 50%;
+    width: 100%;
     justify-content: space-between;
+}
+.form {
+    margin: 50px auto;
+    width: 20%;
+    border: 2px solid black;
+    text-align: center;
+}
+.form input {
+    height: 30px;
+    margin-top: 15px;
+}
+.form button {
+    width: 50px;
+    height: 30px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+.form button:hover {
+    background-color:#000000;
+    color: #ffffff;
 }
