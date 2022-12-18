@@ -7,6 +7,9 @@ function App() {
   const emailRef = useRef();
   const ageRef = useRef();
 
+  const [outError, setOutError] = useState({});
+  const errorUser = {};
+
   const [isupdate, setIsupdate] = useState(false);
   //users array
   const [users, setusers] = useState([]);
@@ -21,7 +24,27 @@ function App() {
     gender: "",
   });
   //inputvalue objeqt values
-  const oNinputChange = () => {
+  const oNinputChange = (e) => {
+    if (e.target.value.length < 4) {
+      errorUser.name = "The minimum number of characters is less than four";
+    }
+    if (e.target.value.length < 4) {
+      errorUser.lastname = "The minimum number of characters is less than four";
+    }
+    if (e.target.value.match("@gmail.com")) {
+    } else {
+      errorUser.email = "goEnter a valid emailga";
+    }
+    if (e.target.value < 18) {
+      errorUser.age = "Minimum age is 18 years";
+    }
+    if (inputChecked === "") {
+      errorUser.gender = "gMarking is mandatoryoga";
+    }
+    setTimeout(() => {
+      setOutError(errorUser);
+    }, 5000);
+
     const newInputName = { ...inputValue };
 
     newInputName.name = nameRef.current.value;
@@ -38,45 +61,64 @@ function App() {
 
   const addUser = (event) => {
     event.preventDefault();
-    //new user objeqt
-    if (!isupdate) {
-      const user = {
-        id: Math.floor(Math.random() * (10 - 1 + 1) + 1),
-        name: nameRef.current.value,
-        lastname: lastnameRef.current.value,
-        email: emailRef.current.value,
-        age: ageRef.current.value,
-        gender: inputChecked,
-      };
 
-      const newUser = [...users, user];
-
-      setusers(newUser);
-    } else {
-      const newUsers = [...users];
-
-      for (let index in newUsers) {
-        if (newUsers[index].id === inputValue.id) {
-          newUsers[index] = inputValue;
-          break;
-        }
-      }
-
-      setusers(newUsers);
+    if (nameRef.current.value.length < 4) {
+      errorUser.name = "The minimum number of characters is less than four";
     }
-    ///inputvalues objeqt value clear
-    const newInputName = { ...inputValue };
+    if (lastnameRef.current.value.length < 4) {
+      errorUser.lastname = "The minimum number of characters is less than four";
+    }
+    if (emailRef.current.value.match("@gmail.com")) {
+    } else {
+      errorUser.email = "Enter a valid email";
+    }
+    if (ageRef.current.value < 18) {
+      errorUser.age = "Minimum age is 18 years";
+    }
+    if (inputChecked === "") {
+      errorUser.gender = "gMarking is mandatoryoga";
+    }
 
-    newInputName.name = "";
-    newInputName.lastname = "";
-    newInputName.email = "";
-    newInputName.age = "";
+    if (Object.keys(errorUser).length === 0) {
+      if (!isupdate) {
+        const user = {
+          id: Math.floor(Math.random() * (10 - 1 + 1) + 1),
+          name: nameRef.current.value,
+          lastname: lastnameRef.current.value,
+          email: emailRef.current.value,
+          age: ageRef.current.value,
+          gender: inputChecked,
+        };
 
-    setInputValue(newInputName);
-    setInputChecked("");
-    setIsupdate(false);
+        const newUser = [...users, user];
+
+        setusers(newUser);
+      } else {
+        const newUsers = [...users];
+
+        for (let index in newUsers) {
+          if (newUsers[index].id === inputValue.id) {
+            newUsers[index] = inputValue;
+            break;
+          }
+        }
+
+        setusers(newUsers);
+      }
+      ///inputvalues objeqt value clear
+      const newInputName = { ...inputValue };
+
+      newInputName.name = "";
+      newInputName.lastname = "";
+      newInputName.email = "";
+      newInputName.age = "";
+
+      setInputValue(newInputName);
+      setInputChecked("");
+      setIsupdate(false);
+    }
+    setOutError(errorUser);
   };
-  console.log(inputValue);
 
   const deleteUser = (id) => {
     const newUser = [...users];
@@ -101,7 +143,6 @@ function App() {
 
     setInputValue(newInputName);
   };
-
   return (
     <div>
       <form>
@@ -111,18 +152,22 @@ function App() {
           onChange={oNinputChange}
           placeholder="name"
         />
+        <p>{outError.name}</p>
         <input
           value={inputValue.lastname}
           ref={lastnameRef}
           onChange={oNinputChange}
           placeholder="lastname"
         />
+        <p>{outError.lastname}</p>
         <input
           value={inputValue.email}
+          name="email"
           ref={emailRef}
           onChange={oNinputChange}
           placeholder="email"
         />
+        <p>{outError.email}</p>
         <input
           type="number"
           value={inputValue.age}
@@ -130,6 +175,7 @@ function App() {
           onChange={oNinputChange}
           placeholder="age"
         />
+        <p>{outError.age}</p>
         <input
           type="checkbox"
           value="women"
@@ -144,6 +190,7 @@ function App() {
           checked={inputChecked === "man"}
         />{" "}
         {"  "} man
+        <p>{outError.gender}</p>
         <button onClick={addUser}> {isupdate ? "update" : "add"} </button>
       </form>
 
