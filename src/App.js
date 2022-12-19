@@ -56,7 +56,11 @@ function App() {
         errorUser.age = "Minimum age is 18 years";
       }
     }
-    setOutError(errorUser);
+
+    setTimeout(() => {
+      setOutError(errorUser);
+    }, 1500);
+    
 
     // setOutError(errorUser);
 
