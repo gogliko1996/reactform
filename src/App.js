@@ -7,6 +7,8 @@ function App() {
   const emailRef = useRef();
   const ageRef = useRef();
 
+  const [fieldValue, setFielValue] = useState("");
+
   const [outError, setOutError] = useState({});
   const errorUser = {};
 
@@ -23,28 +25,40 @@ function App() {
     age: "",
     gender: "",
   });
+
+  const handleBlur = (e) => {
+    setFielValue(e.target.name);
+  };
+  
+
   //inputvalue objeqt values
   const oNinputChange = (e) => {
-    if (e.target.value.length < 4) {
-      errorUser.name = "The minimum number of characters is less than four";
-    }
-    if (e.target.value.length < 4) {
-      errorUser.lastname = "The minimum number of characters is less than four";
-    }
-    if (e.target.value.match("@gmail.com")) {
-    } else {
-      errorUser.email = "goEnter a valid emailga";
-    }
-    if (e.target.value < 18) {
-      errorUser.age = "Minimum age is 18 years";
-    }
-    if (inputChecked === "") {
-      errorUser.gender = "gMarking is mandatoryoga";
-    }
 
-    setTimeout(() => {
-      setOutError(errorUser);
-    }, 5000);
+    if (fieldValue === "name") {
+      if (e.target.value.length < 4) {
+        errorUser.name = "The minimum number of characters is less than four";
+      }
+    }
+    if (fieldValue === "lastname") {
+      if (e.target.value.length < 4) {
+        errorUser.lastname =
+          "The minimum number of characters is less than four";
+      }
+    }
+    if (fieldValue === "email") {
+      if (e.target.value.match("@gmail.com")) {
+      } else {
+        errorUser.email = "goEnter a valid emailga";
+      }
+    }
+    if (fieldValue === "age") {
+      if (e.target.value < 18) {
+        errorUser.age = "Minimum age is 18 years";
+      }
+    }
+    setOutError(errorUser);
+
+    // setOutError(errorUser);
 
     const newInputName = { ...inputValue };
 
@@ -149,15 +163,19 @@ function App() {
       <form className="form">
         <input
           value={inputValue.name}
+          name="name"
           ref={nameRef}
           onChange={oNinputChange}
+          onFocus={handleBlur}
           placeholder="name"
         />
         <p>{outError.name}</p>
         <input
           value={inputValue.lastname}
+          name="lastname"
           ref={lastnameRef}
           onChange={oNinputChange}
+          onFocus={handleBlur}
           placeholder="lastname"
         />
         <p>{outError.lastname}</p>
@@ -166,14 +184,17 @@ function App() {
           name="email"
           ref={emailRef}
           onChange={oNinputChange}
+          onFocus={handleBlur}
           placeholder="email"
         />
         <p>{outError.email}</p>
         <input
           type="number"
+          name="age"
           value={inputValue.age}
           ref={ageRef}
           onChange={oNinputChange}
+          onFocus={handleBlur}
           placeholder="age"
         />
         <p>{outError.age}</p>
