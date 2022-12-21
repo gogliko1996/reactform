@@ -1,4 +1,5 @@
-import React, { useRef, useState } from "react";
+import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 
 function App() {
@@ -7,33 +8,36 @@ function App() {
   const emailRef = useRef();
   const ageRef = useRef();
 
-  const [fieldValue, setFielValue] = useState("");
-
-  const [outError, setOutError] = useState({});
-  const errorUser = {};
-
-  const [isupdate, setIsupdate] = useState(false);
-  //users array
-  const [users, setusers] = useState([]);
-  //chekbox input
-  const [inputChecked, setInputChecked] = useState("");
-  //add user value name
+  const [load, setLoad] = useState(false); /// სანამ სერვერიდან ინფორმაცია ეკრანზე გამოვა
+  const [data, setData] = useState([]); ///სერვერიდან დაბრუნებული ინფორმაცია
+  const [error, setError] = useState(null); ///სერვერის ეროროის დროს რასაც გამოიტანს
+  const [fieldValue, setFielValue] = useState(""); ///წერისას ვალიდაციის შემოწმებისთვის
+  const [outError, setOutError] = useState({}); ///ვალიდაციის ერორების სტეიტი
+  const errorUser = {}; // ვალიდაციის ერორების obj
+  const [isupdate, setIsupdate] = useState(false); ///დამატების ფუნცქიონალისტვის რომ მიხვდედ როდის დაამატოს და როდი განაახლოს
+  const [inputChecked, setInputChecked] = useState(""); //გენდერის სტეიტი
   const [inputValue, setInputValue] = useState({
-    name: "",
-    lastname: "",
+    ///add user value name
+    firstName: "",
+    lastName: "",
     email: "",
     age: "",
-    gender: "",
+    sex: "",
   });
+  const [user, setuser] = useState({}); // user obj
+
+  // const instance = axios.create({
+  //   baseURL: "http://localhost:3001",
+  // });
 
   const handleBlur = (e) => {
+    ///წერისდროს შემოწმებისთვის ვალიდაცია
     setFielValue(e.target.name);
   };
-  
 
-  //inputvalue objeqt values
   const oNinputChange = (e) => {
-
+    //inputvalue objeqt values
+    ///ვალიდაცია ჩაწერის დროს რომ გამოგიტანოს შეცდომა
     if (fieldValue === "name") {
       if (e.target.value.length < 4) {
         errorUser.name = "The minimum number of characters is less than four";
@@ -60,27 +64,35 @@ function App() {
     setTimeout(() => {
       setOutError(errorUser);
     }, 1500);
-    
-
-    // setOutError(errorUser);
 
     const newInputName = { ...inputValue };
-
-    newInputName.name = nameRef.current.value;
-    newInputName.lastname = lastnameRef.current.value;
+    const newUser = { ...user };
+    /////ინპუთის value ველის ობიექტი
+    newInputName.firstName = nameRef.current.value;
+    newInputName.lastName = lastnameRef.current.value;
     newInputName.email = emailRef.current.value;
     newInputName.age = ageRef.current.value;
-
+    ////იუსერების ობიექტი
+    newUser.firstName = nameRef.current.value;
+    newUser.lastName = lastnameRef.current.value;
+    newUser.email = emailRef.current.value;
+    newUser.age = ageRef.current.value;
+    setuser(newUser);
     setInputValue(newInputName);
   };
   //checkbox clic
   const onCheckbox = (e) => {
+    const newUser = { ...user };
+    newUser.sex = e.target.value; ///სქესის დამატება იუზერების ობიექტში
+
+    setuser(newUser);
     setInputChecked(e.target.value);
   };
 
   const addUser = (event) => {
+    /// user დამატების ფუნქციონალი
     event.preventDefault();
-
+    //ვალიდაცია დამატების დაკლიკებისას
     if (nameRef.current.value.length < 4) {
       errorUser.name = "The minimum number of characters is less than four";
     }
@@ -95,40 +107,24 @@ function App() {
       errorUser.age = "Minimum age is 18 years";
     }
     if (inputChecked === "") {
-      errorUser.gender = "gMarking is mandatoryoga";
+      errorUser.sex = "gMarking is mandatoryoga";
     }
 
     if (Object.keys(errorUser).length === 0) {
+      //როდესაც ერორების ობიექტი ცარიელია მაშინ შემოვა რაუნდა მოხდეს
       if (!isupdate) {
-        const user = {
-          id: Math.floor(Math.random() * (10 - 1 + 1) + 1),
-          name: nameRef.current.value,
-          lastname: lastnameRef.current.value,
-          email: emailRef.current.value,
-          age: ageRef.current.value,
-          gender: inputChecked,
-        };
-
-        const newUser = [...users, user];
-
-        setusers(newUser);
+        axios.post("http://localhost:3001/users", user); ///იუსერების გაგზავნა სერვერზე
       } else {
-        const newUsers = [...users];
-
-        for (let index in newUsers) {
-          if (newUsers[index].id === inputValue.id) {
-            newUsers[index] = inputValue;
-            break;
-          }
-        }
-
-        setusers(newUsers);
+        ///user update add
+        console.log("upload", user);
+        axios.put(`http://localhost:3001/users/${inputValue._id}`, user);
+        console.log("id", inputValue._id);
       }
-      ///inputvalues objeqt value clear
+      /// ინპუთების ველიუების გასუფთავება
       const newInputName = { ...inputValue };
 
-      newInputName.name = "";
-      newInputName.lastname = "";
+      newInputName.firstName = "";
+      newInputName.lastName = "";
       newInputName.email = "";
       newInputName.age = "";
 
@@ -140,33 +136,43 @@ function App() {
   };
 
   const deleteUser = (id) => {
-    const newUser = [...users];
-
-    const filterUser = newUser.filter((people) => {
-      return people.id !== id;
-    });
-
-    setusers(filterUser);
+    axios.delete(`http://localhost:3001/users/${id}`);
   };
 
   const updateUser = (id) => {
+    /// ინპუთებში გადააქვს განახლებაზე დაჭერისას
     setIsupdate(true);
-    const newUser = [...users];
     let newInputName = { ...inputValue };
 
-    newUser.map((people) => {
-      if (people.id === id) {
+    data.map((people) => {
+      if (people._id === id) {
         newInputName = people;
       }
     });
 
     setInputValue(newInputName);
   };
+
+  useEffect(() => {
+    const userData = async () => {
+      setLoad("loading");
+      try {
+        const { data } = await axios.get("http://localhost:3001/users");
+        setData(data.data);
+      } catch (error) {
+        setError("ERROR");
+      } finally {
+        setLoad(false);
+      }
+    };
+    userData();
+  }, [outError]);
+
   return (
     <div>
       <form className="form">
         <input
-          value={inputValue.name}
+          value={inputValue.firstName}
           name="name"
           ref={nameRef}
           onChange={oNinputChange}
@@ -175,7 +181,7 @@ function App() {
         />
         <p>{outError.name}</p>
         <input
-          value={inputValue.lastname}
+          value={inputValue.lastName}
           name="lastname"
           ref={lastnameRef}
           onChange={oNinputChange}
@@ -216,25 +222,27 @@ function App() {
           checked={inputChecked === "man"}
         />{" "}
         {"  "} man
-        <p>{outError.gender}</p>
+        <p>{outError.sex}</p>
         <button onClick={addUser}> {isupdate ? "update" : "add"} </button>
       </form>
 
       <div className="users">
-        {users.map((people) => {
+        <h2>{load}</h2>
+        {data.map((people) => {
           return (
-            <ul key={people.id}>
-              <li> name: {people.name}</li>
-              <li> lastname: {people.lastname}</li>
+            <ul key={people._id}>
+              <li> name: {people.firstName}</li>
+              <li> lastname: {people.lastName}</li>
               <li> email: {people.email}</li>
               <li> age: {people.age}</li>
-              <li> gender: {people.gender}</li>
-              <button onClick={() => deleteUser(people.id)}>delete</button>
-              <button onClick={() => updateUser(people.id)}>update</button>
+              <li> gender: {people.sex}</li>
+              <button onClick={() => deleteUser(people._id)}>delete</button>
+              <button onClick={() => updateUser(people._id)}>update</button>
             </ul>
           );
         })}
       </div>
+      <p>{error}</p>
     </div>
   );
 }
